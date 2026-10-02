@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyTrack — Finanzas Personales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="app-container">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>MoneyTrack</h1>
+                    <span>Enterprise Financial Dashboard</span>
+                </div>
+            </div>
+            <div class="topbar-info">
+                <div class="status-dot"></div>
+                <span class="status-label">Sesión activa</span>
+                <span class="divider"></span>
+                <span class="alumno-badge" id="alumno-badge"></span>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h2>Panel de control financiero</h2>
+                <p>Visualiza, gestiona y analiza tus movimientos en tiempo real.</p>
+            </section>
+
+            <section class="resumen">
+                <div class="card saldo-card">
+                    <div class="card-header">
+                        <div class="card-icon icon-saldo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                        </div>
+                        <span class="card-label">Saldo Actual</span>
+                    </div>
+                    <div class="card-value" id="saldo-actual">0,00 €</div>
+                    <div class="card-meta">Saldo inicial: <span id="saldo-inicial-meta">0,00 €</span></div>
+                </div>
+                <div class="card ingresos-card">
+                    <div class="card-header">
+                        <div class="card-icon icon-ingresos">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                        </div>
+                        <span class="card-label">Ingresos Totales</span>
+                    </div>
+                    <div class="card-value ingresos-value" id="total-ingresos">0,00 €</div>
+                    <div class="card-meta">Movimientos positivos</div>
+                </div>
+                <div class="card gastos-card">
+                    <div class="card-header">
+                        <div class="card-icon icon-gastos">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                        </div>
+                        <span class="card-label">Gastos Totales</span>
+                    </div>
+                    <div class="card-value gastos-value" id="total-gastos">0,00 €</div>
+                    <div class="card-meta">Movimientos negativos</div>
+                </div>
+            </section>
+
+            <section class="panel chart-panel">
+                <header class="panel-header panel-header-row">
+                    <div>
+                        <h2>Evolución financiera</h2>
+                        <span class="panel-subtitle">Flujo acumulado de ingresos, gastos y saldo</span>
+                    </div>
+                    <div class="chart-legend-inline">
+                        <span class="legend-line legend-green"></span><span>Ingresos</span>
+                        <span class="legend-line legend-red"></span><span>Gastos</span>
+                        <span class="legend-line legend-white"></span><span>Saldo</span>
+                    </div>
+                </header>
+                <div class="chart-wrapper">
+                    <canvas id="chart-movimientos"></canvas>
+                </div>
+            </section>
+
+            <div class="grid-dos">
+                <section class="panel formulario-seccion">
+                    <header class="panel-header panel-compact">
+                        <h2>Nuevo movimiento</h2>
+                        <span class="panel-subtitle">Registra ingresos y gastos</span>
+                    </header>
+                    <form id="form-movimiento" class="formulario">
+                        <div class="form-row form-row-compact">
+                            <div class="campo">
+                                <label for="concepto">Concepto</label>
+                                <input type="text" id="concepto" placeholder="Ej: Proyecto cliente Q4" required>
+                            </div>
+                            <div class="campo">
+                                <label for="importe">Importe</label>
+                                <div class="input-group">
+                                    <span class="input-prefix">€</span>
+                                    <input type="number" id="importe" step="0.01" placeholder="0.00" required>
+                                </div>
+                                <small>Usa negativo para gastos</small>
+                            </div>
+                            <div class="campo">
+                                <label for="categoria">Categoría</label>
+                                <select id="categoria" required>
+                                    <option value="">Seleccionar</option>
+                                    <option value="Nómina">Nómina</option>
+                                    <option value="Comida">Comida</option>
+                                    <option value="Ocio">Ocio</option>
+                                    <option value="Transporte">Transporte</option>
+                                    <option value="Salud">Salud</option>
+                                    <option value="Educación">Educación</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions form-actions-compact">
+                            <button type="submit" class="btn-primary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Registrar
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="panel estadisticas">
+                    <header class="panel-header panel-compact">
+                        <h2>Analítica de gastos</h2>
+                        <span class="panel-subtitle">Desglose por categoría</span>
+                    </header>
+                    <div id="gastos-por-categoria" class="gastos-lista"></div>
+                    <div id="categoria-max-gasto" class="max-gasto-card"></div>
+                </section>
+            </div>
+
+            <section class="panel tabla-seccion">
+                <header class="panel-header panel-header-row">
+                    <div>
+                        <h2>Historial de movimientos</h2>
+                        <span class="panel-subtitle">Todos los registros ordenados</span>
+                    </div>
+                    <div class="filtro-seccion">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                        <select id="filtro-categoria">
+                            <option value="todas">Todas las categorías</option>
+                            <option value="Nómina">Nómina</option>
+                            <option value="Comida">Comida</option>
+                            <option value="Ocio">Ocio</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Salud">Salud</option>
+                            <option value="Educación">Educación</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                </header>
+                <div class="tabla-wrapper">
+                    <table id="tabla-movimientos">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Concepto</th>
+                                <th>Categoría</th>
+                                <th class="th-right">Importe</th>
+                                <th class="th-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-tabla"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Práctica final JavaScript · 2º DAW · IES Juan García Valdemora</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
